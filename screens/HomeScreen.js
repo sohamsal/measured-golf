@@ -8,7 +8,7 @@ const HomeScreen = () => {
   const handlePress = async (idx) => {
     const urls = [
         'https://squareup.com/appointments/book/z7ravidw3wn876/7QQR9MA0FVNTX/services?rwg_token=AAh05qbFCGlk7pYJid-bnUFmeod-t4thq74gAOJfq50h2JjSjRSQxKes6-gC0QEzbGiqwjrY0BW-s8lK3ve1sWHUZoQClGjylg%3D%3D',
-        'https://squareup.com/appointments/book/z7ravidw3wn876/7QQR9MA0FVNTX/services?rwg_token=AAh05qbFCGlk7pYJid-bnUFmeod-t4thq74gAOJfq50h2JjSjRSQxKes6-gC0QEzbGiqwjrY0BW-s8lK3ve1sWHUZoQClGjylg%3D%3D'
+        'mailto:info@measuredgolf.commailto:info@measuredgolf.com?subject=Register%20For%20Events'
       ];
     const supported = await Linking.canOpenURL(urls[idx]);
     if (supported) {
