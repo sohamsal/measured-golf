@@ -20,7 +20,7 @@ const LoginForm = () => {
     console.log('Email:', email);
     console.log('Pasword:', password);
 
-    navigation.navigate(''); // TODO: Replace with where we're redirecting after login
+    navigation.navigate('Home'); // TODO: Replace with where we're redirecting after login
   }
 
     return (
