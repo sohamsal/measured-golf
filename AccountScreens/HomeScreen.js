@@ -9,7 +9,7 @@ const HomeScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('SignUp')}
         style={styles.button}
       />
-      <View style={styles.space}></View> {/* Add a View with some space */}
+      <View style={styles.space}></View>
       <Button
         title="Login"
         onPress={() => navigation.navigate('Login')}
