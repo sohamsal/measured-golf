@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button, StyleSheet } from 'react-native';
 
-const HomeScreen = ({ navigation }) => {
+const PromptScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Button
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default PromptScreen;

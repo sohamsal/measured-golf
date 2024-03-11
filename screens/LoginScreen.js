@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import SignUpForm from './SignUpForm'; // Import the SignUpForm component
+import LoginForm from './forms/LoginForm'; // Import the LoginForm component
 
-const SignUpScreen = () => {
+const LoginScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create an Account</Text>
-      <SignUpForm />
+      <Text style={styles.title}>Login</Text>
+      <LoginForm />
     </View>
   );
 };
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpScreen;
+export default LoginScreen;
