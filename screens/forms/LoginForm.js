@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Text, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginForm = () => {
@@ -25,6 +25,7 @@ const LoginForm = () => {
 
     return (
       <View style={styles.container}>
+        <Text style={styles.title}>Login</Text>
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -51,6 +52,11 @@ const LoginForm = () => {
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 20,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 20,
     },
     input: {
       width: '100%',
