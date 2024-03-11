@@ -23,6 +23,8 @@ web-build/
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+# for react native debugging extension 
+.vscode/.react
 
 # macOS
 .DS_Store
