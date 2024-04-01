@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+// import auth from '@react-native-firebase/auth';
 
 const LoginForm = () => {
   const navigation = useNavigation();
@@ -15,12 +16,19 @@ const LoginForm = () => {
     setPassword(text);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = () => { // may need to make async later
     // Perform necessary actions ie. authentication
-    console.log('Email:', email);
-    console.log('Pasword:', password);
+    try {
+      console.log('Email:', email);
+      console.log('Pasword:', password);
 
-    navigation.navigate('Home'); // TODO: Replace with where we're redirecting after login
+      // await auth().signInWithEmailAndPassword(email, password);
+      navigation.navigate('Home'); // TODO: Replace with where we're redirecting after login
+    } 
+    catch(error) {
+      Alert.alert('Login failed', error.message);
+      console.error('Login failed:', error.message);
+    }
   }
 
     return (

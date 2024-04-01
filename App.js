@@ -13,7 +13,18 @@ import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 
 
+// import firebase from '@react-native-firebase/app';
+// import firebaseConfig from './firebaseConfig';
+// import auth from '@react-native-firebase/auth';
+
+
 const Stack = createStackNavigator();
+
+// if (!firebase.apps.length) {
+//   firebase.initializeApp(firebaseConfig);
+// }
+
+// auth().useDeviceLanguage();
 
 export default function App() {
   return (
