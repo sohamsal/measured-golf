@@ -1,49 +1,107 @@
-import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import SignUpForm from './forms/SignUpForm'; // Import the SignUpForm component
+import React, { useState } from 'react'
+import { Alert, StyleSheet, View, AppState } from 'react-native'
+import { supabase } from '../lib/supabase'
+import { Button, Input } from 'react-native-elements'
+import { useNavigation } from '@react-navigation/native';
 
-const SignUpScreen = () => {
+
+// Tells Supabase Auth to continuously refresh the session automatically if
+// the app is in the foreground. When this is added, you will continue to receive
+// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
+// if the user's session is terminated. This should only be registered once.
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh()
+  } else {
+    supabase.auth.stopAutoRefresh()
+  }
+})
+
+export default function Auth() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigation = useNavigation();
+
+  async function signInWithEmail() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      Alert.alert(error.message);
+    }else {
+      navigation.navigate('Home');
+    }
+    setLoading(false);
+  }
+  
+  async function signUpWithEmail() {
+    setLoading(true);
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+  
+    if (error) {
+      Alert.alert(error.message);
+    } else if (!session) {
+      Alert.alert('Please check your inbox for email verification!');
+    } else {
+      navigation.navigate('Home');
+    }
+    setLoading(false);
+  }
+
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('./images/CutOffClub.png')} style={styles.backgroundImage0}></ImageBackground>
-      <Text style={styles.bigText}>Sign Up</Text>
-      <View style={styles.form}>
-        <SignUpForm />
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Input
+          label="Email"
+          leftIcon={{ type: 'font-awesome', name: 'envelope' }}
+          onChangeText={(text) => setEmail(text)}
+          value={email}
+          placeholder="email@address.com"
+          autoCapitalize={'none'}
+        />
+      </View>
+      <View style={styles.verticallySpaced}>
+        <Input
+          label="Password"
+          leftIcon={{ type: 'font-awesome', name: 'lock' }}
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          secureTextEntry={true}
+          placeholder="Password"
+          autoCapitalize={'none'}
+        />
+      </View>
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+      <Button title="Sign in" buttonStyle={{ backgroundColor: '#FC7108' }} disabled={loading} onPress={() => signInWithEmail()}/>
+      </View>
+      <View style={styles.verticallySpaced}>
+        <Button title="Sign up" buttonStyle={{ backgroundColor: '#FC7108' }} disabled={loading} onPress={() => signUpWithEmail()} />
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fc7108',
-    alignItems: 'center',
+    marginTop: 40,
+    padding: 12,
   },
-  bigText: {
-    marginTop: 120,
-    fontSize: 40,
-    textAlign: 'left',
-    color: 'white',
-    paddingRight: 200,
-    paddingLeft: 35,
-    fontWeight: '600', // 400 is normal text, 700 is bold
+  verticallySpaced: {
+    paddingTop: 4,
+    paddingBottom: 4,
+    alignSelf: 'stretch',
   },
-  backgroundImage0: {
-    position: 'absolute',
-    width: 120,
-    height: 190,
-    top: -60,
-    left: 270,
-    zIndex: 1,
-  },
-  form: {
+  mt20: {
     marginTop: 20,
-    backgroundColor: 'white',
-    flex: 1, // Fill the available vertical space
-    width: '100%', // Fill the entire width of the screen
-    paddingHorizontal: 20, // Add horizontal padding for better appearance
-  }
-});
-
-export default SignUpScreen;
+  },
+})

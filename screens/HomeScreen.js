@@ -17,7 +17,7 @@ const HomeScreen = () => {
       Alert.alert(`Don't know how to open this URL: ${urls[idx]}`);
     }
   };
-
+  
   const handleBarPressHome = () => {
     navigation.navigate('Home');
   };

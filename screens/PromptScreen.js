@@ -13,14 +13,14 @@ const PromptScreen = ({ navigation }) => {
       <ImageBackground source={require('./images/WhiteBkgd.png')} style={styles.backgroundImage1}>
         <ImageBackground source={require('./images/SignUpButton.png')} style={styles.backgroundImage2}>
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignUp')}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-        </ImageBackground>
-        <ImageBackground source={require('./images/LoginButton.png')} style={styles.backgroundImage3}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </ImageBackground>
+        {/* <ImageBackground source={require('./images/LoginButton.png')} style={styles.backgroundImage3}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </ImageBackground> */}
       </ImageBackground>
       <ImageBackground source={require('./images/LeftBorder.png')} style={styles.backgroundImage4}></ImageBackground>
       <ImageBackground source={require('./images/RightBorder.png')} style={styles.backgroundImage5}></ImageBackground>
