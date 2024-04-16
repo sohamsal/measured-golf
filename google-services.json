@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "853961390324",
+    "project_id": "measured-golf",
+    "storage_bucket": "measured-golf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:853961390324:android:22775b4b46b01c5cbe06a1",
+        "android_client_info": {
+          "package_name": "MeasuredGolfApp.Android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "853961390324-0c10vnmvfvdag9caelt79uu831rt42lv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQJQCWvhpVBgQDLR0ZEq6gMjniyNh95OA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "853961390324-0c10vnmvfvdag9caelt79uu831rt42lv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "853961390324-u43lkum0o6prphesm57meevftp1rtv5r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "MeasuredGolfApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
