@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { WebView } from 'react-native-webview';
 const HomeScreen = () => {
   const navigation = useNavigation();
   const handlePress = async (idx) => {
@@ -17,7 +17,6 @@ const HomeScreen = () => {
       Alert.alert(`Don't know how to open this URL: ${urls[idx]}`);
     }
   };
-  
   const handleBarPressHome = () => {
     navigation.navigate('Home');
   };
@@ -35,7 +34,13 @@ const HomeScreen = () => {
           <Text style={[styles.buttonText, { color: 'black' }]}>Register For Events</Text>
         </TouchableOpacity>
       </View>
-      {/*Add the calendar over here..*/}
+      {/* Embed the YouTube video here */}
+      <WebView
+        style={styles.videoContainer}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        source={{ uri: 'https://www.youtube.com/embed/Y1A9HafQs8I' }}
+      />
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.profileButton} onPress={handleBarPressHome}>
             {/* <Image source={require('../assets/icon.png')} style={styles.barButtonImage} /> */}
@@ -48,12 +53,22 @@ const HomeScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
-    container: {
+  videoContainer: {
+    height: 20,
+    width: '90%',
+    marginTop: 80,
+    marginBottom: 120,
+    alignSelf: 'center',
+    borderRadius: 15,
+    borderWidth: 6,
+    borderColor: 'white',
+    overflow: 'hidden',
+  },
+  container: {
       flex: 1,
       justifyContent: 'flex-start',
-      backgroundColor: '#fc7108',
+      backgroundColor: '#FC7108',
       paddingTop: 50,
     },
     welcomeText: {
@@ -66,7 +81,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-around', 
+      justifyContent: 'space-around',
       alignItems: 'flex-end',
       paddingHorizontal: 10,
     },
@@ -128,6 +143,5 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         marginRight: 10, // ensure the profile button is pushed to the right
     },
-  });  
-
+  });
 export default HomeScreen;
