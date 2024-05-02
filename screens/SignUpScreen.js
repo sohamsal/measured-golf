@@ -1,219 +1,203 @@
-import React, { useState } from 'react'
-import { Alert, StyleSheet, View, AppState, Text, ImageBackground } from 'react-native'
-import { supabase } from '../lib/supabase'
-import { Button, Input } from 'react-native-elements'
-import { useNavigation } from '@react-navigation/native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
-
-// Tells Supabase Auth to continuously refresh the session automatically if
-// the app is in the foreground. When this is added, you will continue to receive
-// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
-// if the user's session is terminated. This should only be registered once.
-AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
-    supabase.auth.startAutoRefresh()
-  } else {
-    supabase.auth.stopAutoRefresh()
-  }
-})
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View, Button, TextInput, ScrollView } from 'react-native';
+import { supabase } from '../lib/supabase';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Auth() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [age, setAge] = useState('')
-  const [playerType, setPlayerType] = useState('')
-  const [competitivePlay, setCompetitivePlay] = useState('')
-  const [memberStatus, setMemberStatus] = useState('')
-  const [averageScore, setAverageScore] = useState('')
-  const [height, setHeight] = useState('')
-  const [armSpan, setArmSpan] = useState('')
-  const [rightLeftHanded, setRightLeftHanded] = useState('')
-  const [postStyle, setPostStyle] = useState('')
-  const [injuryHistory, setInjuryHistory] = useState('')
-  const [otherSportsHistory, setOtherSportsHistory] = useState('')
-
-  const [loading, setLoading] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState({
+      email: '',
+      password: '',
+      fullName: '',
+      age: '',
+      memberStatus: '',
+      playerType: '',
+      competitivePlay: '',
+      height: '',
+      armSpan: '',
+      rightLeftHanded: '',
+      averageScore: '',
+      postStyle: '',
+      injuryHistory: '',
+      otherSportsHistory: '',
+  });
   const navigation = useNavigation();
-  
-  async function signUpWithEmail() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-  
-    if (error) {
-      // Alert.alert(error.message);
-      Alert.alert("An error has occured");
-    } else if (!session) {
-      Alert.alert('Please check your inbox for email verification!');
-    } else {
-      navigation.navigate('Home');
-    }
-    setLoading(false);
-  }
 
-  return (
-    <KeyboardAwareScrollView>
-      <View style={styles.container}>
-        <View style={styles.topContainer}>
-          <ImageBackground source={require('./images/FullClub.png')} style={styles.backgroundImage0}></ImageBackground>
-          {/* <Text style={styles.bigText}>Sign Up</Text> */}
-          {/* <View style={styles.form}>
-            <LoginForm />
-          </View> */}
-        </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input
-            label="Email"
-            leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            placeholder="email@address.com"
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Password"
-            leftIcon={{ type: 'font-awesome', name: 'lock' }}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry={true}
-            placeholder="Password"
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Age"
-            onChangeText={(text) => setAge(text)}
-            value={age}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Player Type"
-            onChangeText={(text) => setPlayerType(text)}
-            value={playerType}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Competitive Play"
-            onChangeText={(text) => setCompetitivePlay(text)}
-            value={competitivePlay}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Member Status"
-            onChangeText={(text) => setMemberStatus(text)}
-            value={memberStatus}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Average Score"
-            onChangeText={(text) => setAverageScore(text)}
-            value={averageScore}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Height"
-            onChangeText={(text) => setHeight(text)}
-            value={height}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Arm Span"
-            onChangeText={(text) => setArmSpan(text)}
-            value={armSpan}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Right/Left Handed"
-            onChangeText={(text) => setRightLeftHanded(text)}
-            value={rightLeftHanded}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Post Style"
-            onChangeText={(text) => setPostStyle(text)}
-            value={postStyle}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Injury History"
-            onChangeText={(text) => setInjuryHistory(text)}
-            value={injuryHistory}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Input
-            label="Other Sports History"
-            onChangeText={(text) => setOtherSportsHistory(text)}
-            value={otherSportsHistory}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Button title="Sign up" buttonStyle={{ backgroundColor: '#FC7108' }} disabled={loading} onPress={() => signUpWithEmail()} />
-        </View>
-      </View>
-    </KeyboardAwareScrollView>
-  )
+  const nextStep = () => {
+      if (isStepCompleted(currentStep)) {
+          setCurrentStep(currentStep + 1);
+      } else {
+          Alert.alert("Incomplete Form", "Please fill out all fields before proceeding.");
+      }
+  };
+
+  const previousStep = () => {
+      setCurrentStep(currentStep - 1);
+  };
+
+  const handleChange = (name, value) => {
+      setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+      if (!isStepCompleted(currentStep)) {
+          Alert.alert("Incomplete Form", "Please complete all fields before submitting.");
+          return;
+      }
+
+      const { data: { session }, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+      });
+
+      if (error) {
+          Alert.alert("Signup Error", error.message);
+      } else if (!session) {
+          Alert.alert('Verification', 'Please check your inbox for email verification!');
+      } else {
+          await createProfile(session.user.id);
+          navigation.navigate('Home');
+      }
+  };
+
+  // Function to check if all fields for the current step are filled
+  const isStepCompleted = (step) => {
+      switch(step) {
+          case 1:
+              return formData.email.trim() !== '' && formData.password.trim() !== '';
+          case 2:
+              return formData.fullName.trim() !== '' && formData.age.trim() !== '';
+          case 3:
+              return formData.memberStatus.trim() !== '' && formData.playerType.trim() !== '' && formData.competitivePlay.trim() !== '';
+          case 4:
+              return formData.height.trim() !== '' && formData.armSpan.trim() !== '' && formData.rightLeftHanded.trim() !== '';
+          case 5:
+              return formData.averageScore.trim() !== '' && formData.postStyle.trim() !== '';
+          case 6:
+              return formData.injuryHistory.trim() !== '' && formData.otherSportsHistory.trim() !== '';
+          default:
+              return false;
+      }
+  };
+
+    async function createProfile(userId) {
+        const { error } = await supabase.from('profiles').upsert({
+            id: userId,
+            full_name: formData.fullName,
+            age: formData.age,
+            player_type: formData.playerType,
+            competitive_play: formData.competitivePlay,
+            member_status: formData.memberStatus,
+            average_score: formData.averageScore,
+            height: formData.height,
+            arm_span: formData.armSpan,
+            right_left_handed: formData.rightLeftHanded,
+            post_style: formData.postStyle,
+            injury_history: formData.injuryHistory,
+            other_sports_history: formData.otherSportsHistory,
+        }, {
+            returning: "minimal", // Don't return the value after inserting
+        });
+
+        if (error) {
+            Alert.alert("Profile Update Error", error.message);
+        }
+    };
+
+    const renderStepContent = (step) => {
+        switch(step) {
+            case 1:
+                return <>
+                    <TextInput style={styles.input} placeholder="Email" value={formData.email} onChangeText={text => handleChange('email', text)} />
+                    <TextInput style={styles.input} placeholder="Password" secureTextEntry={true} value={formData.password} onChangeText={text => handleChange('password', text)} />
+                </>;
+            case 2:
+                return <>
+                    <TextInput style={styles.input} placeholder="Full Name" value={formData.fullName} onChangeText={text => handleChange('fullName', text)} />
+                    <TextInput style={styles.input} placeholder="Age" value={formData.age} onChangeText={text => handleChange('age', text)} />
+                </>;
+            case 3:
+                return <>
+                    <TextInput style={styles.input} placeholder="Member Status" value={formData.memberStatus} onChangeText={text => handleChange('memberStatus', text)} />
+                    <TextInput style={styles.input} placeholder="Player Type" value={formData.playerType} onChangeText={text => handleChange('playerType', text)} />
+                    <TextInput style={styles.input} placeholder="Competitive Play" value={formData.competitivePlay} onChangeText={text => handleChange('competitivePlay', text)} />
+                </>;
+            case 4:
+                return <>
+                    <TextInput style={styles.input} placeholder="Height" value={formData.height} onChangeText={text => handleChange('height', text)} />
+                    <TextInput style={styles.input} placeholder="Arm Span" value={formData.armSpan} onChangeText={text => handleChange('armSpan', text)} />
+                    <TextInput style={styles.input} placeholder="Right/Left Handed" value={formData.rightLeftHanded} onChangeText={text => handleChange('rightLeftHanded', text)} />
+                </>;
+            case 5:
+                return <>
+                    <TextInput style={styles.input} placeholder="Average Score" value={formData.averageScore} onChangeText={text => handleChange('averageScore', text)} />
+                    <TextInput style={styles.input} placeholder="Post Style" value={formData.postStyle} onChangeText={text => handleChange('postStyle', text)} />
+                </>;
+            case 6:
+                return <>
+                    <TextInput style={styles.input} placeholder="Injury History" value={formData.injuryHistory} onChangeText={text => handleChange('injuryHistory', text)} />
+                    <TextInput style={styles.input} placeholder="Other Sports History" value={formData.otherSportsHistory} onChangeText={text => handleChange('otherSportsHistory', text)} />
+                </>;
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.formGroup}>
+                {renderStepContent(currentStep)}
+                <View style={styles.buttonContainer}>
+                    {currentStep > 1 && (
+                        <Button
+                            title="Back"
+                            onPress={previousStep}
+                            color="#FC7108"
+                        />
+                    )}
+                    {currentStep < 6 && (
+                        <Button
+                            title="Next"
+                            onPress={nextStep}
+                            color="#FC7108"
+                        />
+                    )}
+                    {currentStep === 6 && (
+                        <Button
+                            title="Submit"
+                            onPress={handleSubmit}
+                            color="#FC7108"
+                        />
+                    )}
+                </View>
+            </View>
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 40,
-    padding: 12,
-  },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: 'stretch',
-  },
-  mt20: {
-    marginTop: 20,
-  },
-  backgroundImage0: {
-    position: 'absolute',
-    width: 180,
-    height: 190,
-    top: -20,
-    left: 210,
-    zIndex: 1,
-  },
-})
+    container: {
+        flex: 1,
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    formGroup: {
+        width: '80%',
+        alignItems: 'center',
+        marginBottom: 30,
+    },
+    input: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginBottom: 20,
+        paddingHorizontal: 10,
+        width: '100%',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+});
