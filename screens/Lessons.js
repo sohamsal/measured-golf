@@ -1,60 +1,84 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import VideoPlayer from './VideoPlayer';
+import { WebView } from 'react-native-webview';
 
-const LessonsScreen = ( { route } ) => {
-    const { lessonName } = route.params;
+const LessonsScreen = ({ route }) => {
+  const { lessonName } = route.params;
 
-    return (
-        <ScrollView style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton}>
-            <Icon name="arrow-back" size={24} color="#FF6F00" />
-            </TouchableOpacity>
-            <Icon name="bookmark-outline" size={24} color="#FF6F00" style={styles.bookmarkIcon} />
-        </View>
+  const youtubeLink = "https://www.youtube.com/watch?v=Xj0Jtjg3lHQ";
+  const videoId = youtubeLink.split('v=')[1]; // Extracts "VIDEO_ID"
+  console.log(videoId)
+  
+  return (
+    <ScrollView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton}>
+          <Icon name="arrow-back" size={24} color="#FF6F00" />
+        </TouchableOpacity>
+        <Icon name="bookmark-outline" size={24} color="#FF6F00" style={styles.bookmarkIcon} />
+      </View>
 
-        {/* Video/Image Section */}
-        <Image
-            source={{ uri: 'https://via.placeholder.com/500x250' }}
-            style={styles.image}
-        />
+      {/* Video Player */}
 
-        {/* Title and Description */}
-        <View style={styles.infoContainer}>
-            <Text style={styles.title}>Backhand Mechanics</Text>
-            <Text style={styles.description}>
-            Learn the different styles of swinging: backhand, fronthand, and how to effectively swing
+      <View style={styles.videoContainer}>
+        <VideoPlayer videoId={videoId} />
+      </View>
+
+      {/* Title and Description */}
+      <View style={styles.infoContainer}>
+        <Text style={styles.title}>Backhand Mechanics</Text>
+        <Text style={styles.description}>
+          Learn the different styles of swinging: backhand, fronthand, and how to effectively swing
+        </Text>
+      </View>
+
+      {/* Up Next Section */}
+      <View style={styles.upNextContainer}>
+        <Text style={styles.upNextTitle}>Up Next</Text>
+
+        {/* List of Lessons */}
+        {[
+          { title: 'Backhand Grip', duration: '01:37' },
+          { title: 'Generating Power', duration: '05:49', highlighted: true },
+          { title: 'Practice Drills', duration: '09:21' },
+          { title: 'Course Applications', duration: '11:32' },
+        ].map((lesson, index) => (
+          <View
+            key={index}
+            style={[
+              styles.lessonSubItem,
+              lesson.highlighted && styles.highlightedItem,
+            ]}
+          >
+            <Icon
+              name="play-circle-outline"
+              size={20}
+              color={lesson.highlighted ? '#FF6F00' : '#C4C4C4'}
+            />
+            <Text
+              style={[
+                styles.subLessonTitle,
+                lesson.highlighted && styles.highlightedText,
+              ]}
+            >
+              {lesson.title}
             </Text>
-        </View>
-
-        {/* Up Next Section */}
-        <View style={styles.upNextContainer}>
-            <Text style={styles.upNextTitle}>Up Next</Text>
-
-            {/* List of Lessons */}
-            <View style={styles.lessonItem}>
-            <View style={styles.lessonInfo}>
-                <Text style={styles.lessonTitle}>Lesson 2 - Swing Mechanics</Text>
-                <Icon name="chevron-forward-outline" size={20} color="#FF6F00" />
-            </View>
-            </View>
-
-            {["Backhand Grip", "Generating Power", "Practice Drills", "Course Applications"].map(
-            (title, index) => (
-                <View key={index} style={styles.lessonSubItem}>
-                <Icon name="play-circle-outline" size={20} color={title === "Generating Power" ? "#FF6F00" : "#C4C4C4"} />
-                <Text style={[styles.subLessonTitle, title === "Generating Power" && styles.highlighted]}>
-                    {title}
-                </Text>
-                <Text style={[styles.duration, title === "Generating Power" && styles.highlighted]}>0{index + 1}:{(index + 1) * 30}</Text>
-                </View>
-            )
-            )}
-        </View>
-        </ScrollView>
-    );
+            <Text
+              style={[
+                styles.duration,
+                lesson.highlighted && styles.highlightedText,
+              ]}
+            >
+              {lesson.duration}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -74,10 +98,10 @@ const styles = StyleSheet.create({
   bookmarkIcon: {
     padding: 5,
   },
-  image: {
+  videoContainer: {
     width: '100%',
-    height: 200,
-    resizeMode: 'cover',
+    aspectRatio: 16 / 9, // Ensures 16:9 aspect ratio
+    backgroundColor: 'black', // Placeholder for video loading
   },
   infoContainer: {
     padding: 15,
@@ -102,24 +126,6 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 10,
   },
-  lessonItem: {
-    backgroundColor: '#F7F7F7',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  lessonInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  lessonTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
   lessonSubItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -137,7 +143,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#777',
   },
-  highlighted: {
+  highlightedItem: {
+    backgroundColor: '#FFF6E5',
+    borderRadius: 5,
+    paddingHorizontal: 5,
+  },
+  highlightedText: {
     color: '#FF6F00',
     fontWeight: 'bold',
   },
