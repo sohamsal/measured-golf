@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Button, Text, StyleSheet, TouchableOpacity, ImageBackground, Linking } from 'react-native';
+import { View, SafeAreaView, Button, Text, StyleSheet, TouchableOpacity, ImageBackground, Linking } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { withSafeAreaInsets } from 'react-native-safe-area-context';
 
 const PromptScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.welcomeText}>
         Welcome to Measured Golf!
       </Text>
@@ -26,14 +26,14 @@ const PromptScreen = ({ navigation }) => {
       <ImageBackground source={require('./images/RightBorder.png')} style={styles.backgroundImage5}></ImageBackground>
       <ImageBackground source={require('./images/Tee.png')} style={styles.backgroundImage6}></ImageBackground>
       <ImageBackground source={require('./images/Flag.png')} style={styles.backgroundImage7}></ImageBackground>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fc7108',
+    backgroundColor: '#FF6F00',
     alignItems: 'center',
   },
   welcomeText: {

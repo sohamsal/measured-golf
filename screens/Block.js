@@ -8,6 +8,7 @@ const Block = ({ topic }) => {
     const navigation = useNavigation();
 
     const handlePress = ( route ) => {
+        console.log(topic.name)
         navigation.navigate('Lessons', { lessonName: topic.name });
     };
 

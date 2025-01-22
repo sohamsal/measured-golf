@@ -18,14 +18,14 @@ export default function App() {
   return (
       <NavigationContainer>
         <Tabs/>
-        {/* 
-        <Stack.Navigator>
-          <Stack.Screen name="Prompt" component={PromptScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-        </Stack.Navigator> 
+        {/*
+          <Stack.Navigator>
+            <Stack.Screen name = "Prompt" component = {PromptScreen} options={{ headerShown: false }}/>
+            <Stack.Screen name="SignUp" component={SignUpScreen}  options={{ headerShown: false }}/>
+            <Stack.Screen name="Login" component={LoginScreen}  options={{ headerShown: false }}/>
+            <Stack.Screen name="Home" component={HomeScreen}  options={{ headerShown: false }}/>
+            <Stack.Screen name="Profile" component={ProfileScreen}  options={{ headerShown: false }}/>
+          </Stack.Navigator> 
         */}
     </NavigationContainer>
   );

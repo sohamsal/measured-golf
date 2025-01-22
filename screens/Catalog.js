@@ -1,81 +1,135 @@
-import React from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity  } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, ImageBackground, Text, TextInput, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Block from './Block';
+import { supabase } from '../lib/supabase'; // Import the existing Supabase client
 
-const topics = [
-    { name: 'Swing Mechanics', progress: 12 },
-    { name: 'Course Management', progress: 54 },
-    { name: 'Putting Techniques', progress: 76 },
-    { name: 'Bunker Tips', progress: 38 },
-    { name: 'Stance and Posture', progress: 22 },
-    { name: 'Chipping Techniques', progress: 25 },
-    { name: 'Green Reading', progress: 98 },
-    { name: 'Ball Positioning', progress: 84 },
-    { name: 'Grip Technique', progress: 43 },
-    { name: 'Shot Shaping', progress: 5 },
-  ];
+const Catalog = () => {
+  const [topics, setTopics] = useState([]); // State to hold all topics
+  const [searchQuery, setSearchQuery] = useState(''); // State for the search bar input
+  const [filteredTopics, setFilteredTopics] = useState([]); // State for topics matching the search query
 
-const Catalog = ({}) => {
+  // Fetch topics from Supabase
+  async function fetchTopics() {
+    const { data, error } = await supabase
+      .from('videos')
+      .select('topic, watched_fully')
+      .order('topic', { ascending: true });
 
-    return (
-        <SafeAreaView style={styles.safeContainer}>
-          <View style={styles.contentContainer}>
-            <View style={styles.header}>
-              <Text style={styles.title}>Driving Range</Text>
-              <Text style={styles.subtitle}>Find tips & tricks to improve your scores</Text>
-            </View>
-            <TextInput style={styles.searchBar} placeholder="Search Topics" />
-            <ScrollView contentContainerStyle={styles.blocksContainer} showsVerticalScrollIndicator={false}>
-              {topics.map((topic, index) => (
-                  <Block topic={topic} />
-              ))}
-            </ScrollView>
+    if (error) {
+      console.error('Error fetching topics:', error);
+      return [];
+    }
+
+    // Group videos by topic and calculate progress
+    const topicMap = {};
+    data.forEach((item) => {
+      if (!topicMap[item.topic]) {
+        topicMap[item.topic] = { total: 0, fullyWatched: 0 };
+      }
+      topicMap[item.topic].total += 1;
+      if (item.watched_fully) {
+        topicMap[item.topic].fullyWatched += 1;
+      }
+    });
+
+    return Object.keys(topicMap).map((topic) => ({
+      name: topic,
+      progress: Math.round((topicMap[topic].fullyWatched / topicMap[topic].total) * 100),
+    }));
+  }
+
+  // Re-fetch data when the component is focused
+  useFocusEffect(
+    useCallback(() => {
+      const loadTopics = async () => {
+        const fetchedTopics = await fetchTopics();
+        setTopics(fetchedTopics); // Store all topics
+        setFilteredTopics(fetchedTopics); // Update filtered topics
+      };
+
+      loadTopics();
+    }, [])
+  );
+
+  // Filter topics whenever `searchQuery` changes
+  useEffect(() => {
+    const filtered = topics.filter((topic) =>
+      topic.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredTopics(filtered);
+  }, [searchQuery, topics]);
+
+  return (
+    <SafeAreaView style={styles.safeContainer}>
+      <ImageBackground source={require('./images/BackgroundClub.png')} style={styles.background} resizeMode="cover">
+        <View style={styles.contentContainer}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Driving Range</Text>
+            <Text style={styles.subtitle}>Find tips & tricks to improve your scores</Text>
           </View>
-        </SafeAreaView>
-      );
-}
+
+          {/* Search Bar */}
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search Topics"
+            value={searchQuery}
+            onChangeText={(text) => setSearchQuery(text)}
+          />
+
+          {/* Scrollable Topics List */}
+          <ScrollView contentContainerStyle={styles.blocksContainer} showsVerticalScrollIndicator={false}>
+            {filteredTopics.map((topic, index) => (
+              <Block key={index} topic={topic} />
+            ))}
+          </ScrollView>
+        </View>
+      </ImageBackground>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-    safeContainer: {
-      flex: 1,
-      backgroundColor: '#FF6F00',
-    },
-    contentContainer: {
-      flex: 1,
-      paddingTop: 10,
-      paddingHorizontal: 10, // Padding to ensure content is away from the edges
-    },
-    header: {
-        marginBottom: 20,
-    },
-    title: {
-      fontSize: 40,
-      fontWeight: 'bold',
-      color: 'white',
-    },
-    subtitle: {
-      fontSize: 20,
-      color: 'white',
-      marginTop: 5,
-    },
-    searchBar: {
-      backgroundColor: 'white',
-      borderRadius: 10,
-      height: 50,
-      padding: 10,
-      marginVertical: 5,
-    },
-    blocksContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-    },
-    touchableBlock: {
-        width: '90%',           // Ensure TouchableOpacity takes up only 48% of the width (2 per row)
-        marginBottom: 10,       // Adds space between rows
-    },
-  });
-  
+  background: {
+    flex: 1, // Makes the image fill the entire screen
+    justifyContent: 'center', // Center content vertically
+    alignItems: 'center', // Center content horizontally
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: '#FF6F00',
+  },
+  contentContainer: {
+    flex: 1,
+    paddingTop: 10,
+    paddingHorizontal: 10,
+  },
+  header: {
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  subtitle: {
+    fontSize: 20,
+    color: 'white',
+    marginTop: 5,
+  },
+  searchBar: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    height: 50,
+    padding: 10,
+    marginVertical: 5,
+  },
+  blocksContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+});
 
-export default Catalog
+export default Catalog;
