@@ -22,25 +22,25 @@ const ProfileScreen = () => {
     armSpan: ''
   });
 
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserProfile();
+  // }, []);
 
-  const fetchUserProfile = async () => {
-    const { data } = await supabase.from('profiles').select('*');
-    if (data && data.length > 0) {
-      const { full_name, average_score, height, age, post_style, competitive_play, arm_span } = data[0];
-      setProfileData({
-        fullName: full_name || 'User',
-        averageScore: average_score || 'Unknown Score',
-        height: height || 'Unknown',
-        age: age || 'Unknown',
-        postStyle: post_style || 'Unknown',
-        competitivePlay: competitive_play || 'Unknown',
-        armSpan: arm_span || 'Unknown'
-      });
-    }
-  };
+  // const fetchUserProfile = async () => {
+  //   const { data } = await supabase.from('profiles').select('*');
+  //   if (data && data.length > 0) {
+  //     const { full_name, average_score, height, age, post_style, competitive_play, arm_span } = data[0];
+  //     setProfileData({
+  //       fullName: full_name || 'User',
+  //       averageScore: average_score || 'Unknown Score',
+  //       height: height || 'Unknown',
+  //       age: age || 'Unknown',
+  //       postStyle: post_style || 'Unknown',
+  //       competitivePlay: competitive_play || 'Unknown',
+  //       armSpan: arm_span || 'Unknown'
+  //     });
+  //   }
+  // };
 
   const handlePress = async (idx) => {
     const urls = ['https://www.clippd.com/', 'https://www.thestacksystem.com/', 'https://www.bluegolf.com/', 'https://www.trackman.com/'];
@@ -85,14 +85,14 @@ const ProfileScreen = () => {
           <Image source={i4} style={styles.buttonImage} />
         </TouchableOpacity>
       </View>
-      <View style={styles.bottomBar}>
+      {/* <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.profileButton} onPress={handleBarPressHome}>
           <MaterialIcons name="home" size={32} color="black" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.profileButton} onPress={handleBarPressProfile}>
           <MaterialIcons name="person" size={32} color="black" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
