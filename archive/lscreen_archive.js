@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, SafeAreaView, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import VideoPlayer from './VideoPlayer';
-import { supabase } from '../lib/supabase'; // Import your existing Supabase client
+// import { supabase } from '../lib/supabase'; // Import your existing Supabase client
 import { useNavigation } from '@react-navigation/native';
 
 const LessonsScreen = ({ route }) => {
@@ -25,26 +25,26 @@ const LessonsScreen = ({ route }) => {
   };
 
   // Fetch videos based on the topic
-  async function fetchVideos() {
-    try {
-      const { data, error } = await supabase
-        .from('videos')
-        .select('id, video_title, video_link, duration, watched_fully')
-        .eq('topic', topic)
-        .order('video_title', { ascending: true });
+//   async function fetchVideos() {
+//     try {
+//       const { data, error } = await supabase
+//         .from('videos')
+//         .select('id, video_title, video_link, duration, watched_fully')
+//         .eq('topic', topic)
+//         .order('video_title', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching videos:', error);
-        setError('Failed to load videos. Please try again later.');
-        return [];
-      }
-      return data;
-    } catch (err) {
-      console.error('Unexpected error fetching videos:', err);
-      setError('An unexpected error occurred.');
-      return [];
-    }
-  }
+//       if (error) {
+//         console.error('Error fetching videos:', error);
+//         setError('Failed to load videos. Please try again later.');
+//         return [];
+//       }
+//       return data;
+//     } catch (err) {
+//       console.error('Unexpected error fetching videos:', err);
+//       setError('An unexpected error occurred.');
+//       return [];
+//     }
+//   }
 
   useEffect(() => {
     const loadVideos = async () => {
@@ -59,29 +59,29 @@ const LessonsScreen = ({ route }) => {
   }, [topic]);
 
   // Update `watched_fully` to true in the database
-  const markAsWatched = async (videoId) => {
-    try {
-      const { error } = await supabase
-        .from('videos')
-        .update({ watched_fully: true })
-        .eq('id', videoId);
+//   const markAsWatched = async (videoId) => {
+//     try {
+//       const { error } = await supabase
+//         .from('videos')
+//         .update({ watched_fully: true })
+//         .eq('id', videoId);
 
-      if (error) {
-        console.error('Error updating watched_fully:', error);
-        setError('Failed to update video status.');
-      } else {
-        // Update the local state
-        setVideos((prevVideos) =>
-          prevVideos.map((video) =>
-            video.id === videoId ? { ...video, watched_fully: true } : video
-          )
-        );
-      }
-    } catch (err) {
-      console.error('Unexpected error updating watched_fully:', err);
-      setError('An unexpected error occurred.');
-    }
-  };
+//       if (error) {
+//         console.error('Error updating watched_fully:', error);
+//         setError('Failed to update video status.');
+//       } else {
+//         // Update the local state
+//         setVideos((prevVideos) =>
+//           prevVideos.map((video) =>
+//             video.id === videoId ? { ...video, watched_fully: true } : video
+//           )
+//         );
+//       }
+//     } catch (err) {
+//       console.error('Unexpected error updating watched_fully:', err);
+//       setError('An unexpected error occurred.');
+//     }
+//   };
 
   // Handle video selection and mark as watched
   const handleVideoSelect = (video) => {

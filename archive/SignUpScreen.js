@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, View, Button, TextInput, ScrollView } from 'react-native';
-import { supabase } from '../lib/supabase';
+// import { supabase } from '../lib/supabase';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Auth() {
@@ -39,26 +39,26 @@ export default function Auth() {
       setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
   };
 
-  const handleSubmit = async () => {
-      if (!isStepCompleted(currentStep)) {
-          Alert.alert("Incomplete Form", "Please complete all fields before submitting.");
-          return;
-      }
+//   const handleSubmit = async () => {
+//       if (!isStepCompleted(currentStep)) {
+//           Alert.alert("Incomplete Form", "Please complete all fields before submitting.");
+//           return;
+//       }
 
-      const { data: { session }, error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-      });
+//       const { data: { session }, error } = await supabase.auth.signUp({
+//           email: formData.email,
+//           password: formData.password,
+//       });
 
-      if (error) {
-          Alert.alert("Signup Error", error.message);
-      } else if (!session) {
-          Alert.alert('Verification', 'Please check your inbox for email verification!');
-      } else {
-          await createProfile(session.user.id);
-          navigation.navigate('Home');
-      }
-  };
+//       if (error) {
+//           Alert.alert("Signup Error", error.message);
+//       } else if (!session) {
+//           Alert.alert('Verification', 'Please check your inbox for email verification!');
+//       } else {
+//           await createProfile(session.user.id);
+//           navigation.navigate('Home');
+//       }
+//   };
 
   // Function to check if all fields for the current step are filled
   const isStepCompleted = (step) => {
@@ -80,29 +80,29 @@ export default function Auth() {
       }
   };
 
-    async function createProfile(userId) {
-        const { error } = await supabase.from('profiles').upsert({
-            id: userId,
-            full_name: formData.fullName,
-            age: formData.age,
-            player_type: formData.playerType,
-            competitive_play: formData.competitivePlay,
-            member_status: formData.memberStatus,
-            average_score: formData.averageScore,
-            height: formData.height,
-            arm_span: formData.armSpan,
-            right_left_handed: formData.rightLeftHanded,
-            post_style: formData.postStyle,
-            injury_history: formData.injuryHistory,
-            other_sports_history: formData.otherSportsHistory,
-        }, {
-            returning: "minimal", // Don't return the value after inserting
-        });
+    // async function createProfile(userId) {
+    //     const { error } = await supabase.from('profiles').upsert({
+    //         id: userId,
+    //         full_name: formData.fullName,
+    //         age: formData.age,
+    //         player_type: formData.playerType,
+    //         competitive_play: formData.competitivePlay,
+    //         member_status: formData.memberStatus,
+    //         average_score: formData.averageScore,
+    //         height: formData.height,
+    //         arm_span: formData.armSpan,
+    //         right_left_handed: formData.rightLeftHanded,
+    //         post_style: formData.postStyle,
+    //         injury_history: formData.injuryHistory,
+    //         other_sports_history: formData.otherSportsHistory,
+    //     }, {
+    //         returning: "minimal", // Don't return the value after inserting
+    //     });
 
-        if (error) {
-            Alert.alert("Profile Update Error", error.message);
-        }
-    };
+    //     if (error) {
+    //         Alert.alert("Profile Update Error", error.message);
+    //     }
+    // };
 
     const renderStepContent = (step) => {
         switch(step) {

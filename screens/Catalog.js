@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, ImageBackground, Text, TextInput, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Block from './Block';
-import { supabase } from '../lib/supabase'; // Import the existing Supabase client
+// import { supabase } from '../lib/supabase'; // Import the existing Supabase client
 
 const Catalog = () => {
   const [topics, setTopics] = useState([]); // State to hold all topics
@@ -10,55 +10,55 @@ const Catalog = () => {
   const [filteredTopics, setFilteredTopics] = useState([]); // State for topics matching the search query
 
   // Fetch topics from Supabase
-  async function fetchTopics() {
-    const { data, error } = await supabase
-      .from('videos')
-      .select('topic, watched_fully')
-      .order('topic', { ascending: true });
+  // async function fetchTopics() {
+  //   const { data, error } = await supabase
+  //     .from('videos')
+  //     .select('topic, watched_fully')
+  //     .order('topic', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching topics:', error);
-      return [];
-    }
+  //   if (error) {
+  //     console.error('Error fetching topics:', error);
+  //     return [];
+  //   }
 
-    // Group videos by topic and calculate progress
-    const topicMap = {};
-    data.forEach((item) => {
-      if (!topicMap[item.topic]) {
-        topicMap[item.topic] = { total: 0, fullyWatched: 0 };
-      }
-      topicMap[item.topic].total += 1;
-      if (item.watched_fully) {
-        topicMap[item.topic].fullyWatched += 1;
-      }
-    });
+  //   // Group videos by topic and calculate progress
+  //   const topicMap = {};
+  //   data.forEach((item) => {
+  //     if (!topicMap[item.topic]) {
+  //       topicMap[item.topic] = { total: 0, fullyWatched: 0 };
+  //     }
+  //     topicMap[item.topic].total += 1;
+  //     if (item.watched_fully) {
+  //       topicMap[item.topic].fullyWatched += 1;
+  //     }
+  //   });
 
-    return Object.keys(topicMap).map((topic) => ({
-      name: topic,
-      progress: Math.round((topicMap[topic].fullyWatched / topicMap[topic].total) * 100),
-    }));
-  }
+  //   return Object.keys(topicMap).map((topic) => ({
+  //     name: topic,
+  //     progress: Math.round((topicMap[topic].fullyWatched / topicMap[topic].total) * 100),
+  //   }));
+  // }
 
   // Re-fetch data when the component is focused
-  useFocusEffect(
-    useCallback(() => {
-      const loadTopics = async () => {
-        const fetchedTopics = await fetchTopics();
-        setTopics(fetchedTopics); // Store all topics
-        setFilteredTopics(fetchedTopics); // Update filtered topics
-      };
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const loadTopics = async () => {
+  //       const fetchedTopics = await fetchTopics();
+  //       setTopics(fetchedTopics); // Store all topics
+  //       setFilteredTopics(fetchedTopics); // Update filtered topics
+  //     };
 
-      loadTopics();
-    }, [])
-  );
+  //     loadTopics();
+  //   }, [])
+  // );
 
   // Filter topics whenever `searchQuery` changes
-  useEffect(() => {
-    const filtered = topics.filter((topic) =>
-      topic.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredTopics(filtered);
-  }, [searchQuery, topics]);
+  // useEffect(() => {
+  //   const filtered = topics.filter((topic) =>
+  //     topic.name.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   setFilteredTopics(filtered);
+  // }, [searchQuery, topics]);
 
   return (
     <SafeAreaView style={styles.safeContainer}>
