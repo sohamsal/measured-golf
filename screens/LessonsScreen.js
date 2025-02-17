@@ -6,11 +6,15 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  Button,
+  Pressable
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import VideoPlayer from "./VideoPlayer";
 // import { supabase } from "../lib/supabase";
 import { useNavigation } from "@react-navigation/native";
+import CircularProgress from './CircularProgress'
 
 const SAMPLE_SECTIONS = [
   {
@@ -61,6 +65,13 @@ const LessonsScreen = ({ route }) => {
   const [currentVideo, setCurrentVideo] = useState(null);
   const [sections, setSections] = useState([]);
   const [error, setError] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleQuiz, setModalVisibleQuiz] = useState(false);
+  const [videoComplete, setVideoComplete] = useState(false)
+  const [percent, setPercent] = useState(0)
+  const [completedVideos, setcompletedVideos] = useState({})
+
+  //TODO: put this into the db
 
   // Fetch course sections and videos from Supabase
   async function fetchCourseSections() {
@@ -123,12 +134,84 @@ const LessonsScreen = ({ route }) => {
   //   }
   // };
 
+  function openModal() {
+    setModalVisible(true);
+  }
+  function makeProgress() {
+    console.log(expandedSection)
+    var copyState = { ...completedVideos}; //create a new copy
+    if (!copyState.hasOwnProperty(expandedSection)) {
+      copyState[expandedSection] = new Set()
+    }
+    console.log(currentVideo.id)
+    if (!copyState[expandedSection].has(currentVideo.id)) {
+      copyState[expandedSection].add(currentVideo.id);
+    }
+    setcompletedVideos(copyState);
+    closeVideo();
+    //TODO: hardcoded 2 videos per section, to change later to be more flexible
+    if (copyState[expandedSection].size == 2) {
+      setModalVisibleQuiz(true);
+    }
+  }
+
+  function closeVideo() {
+    setCurrentVideo(null);
+    setModalVisible(!modalVisible)
+  }
+
+
   // Render a single section
   const renderSection = (section) => {
     const isExpanded = expandedSection === section.id;
 
     return (
       <View key={section.id} style={styles.sectionContainer}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Did you finish watching this video?</Text>
+              <View style={styles.modalOptions}>
+                <Pressable
+                  style={[styles.button, styles.buttonCloseNo]}
+                  onPress={() => closeVideo()}>
+                  <Text style={styles.textStyle}>No</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonCloseYes]}
+                  onPress={() => makeProgress(section.id)}>
+                  <Text style={styles.textStyle}>Yes</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisibleQuiz}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Congrats! You have finished {section.title}!</Text>
+              <Text style={styles.modalText}>Want to take a quick quiz to test your knowledge?</Text>
+              <View style={styles.modalOptions}>
+                <Pressable
+                  style={[styles.button, styles.buttonCloseNo]}
+                  onPress={() => setModalVisibleQuiz(false)}>
+                  <Text style={styles.textStyle}>No</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonCloseYes]}
+                  onPress={() => setModalVisibleQuiz(false)}>
+                  <Text style={styles.textStyle}>Yes</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
         <TouchableOpacity
           style={styles.sectionHeader}
           onPress={() => handleSectionPress(section.id)}
@@ -140,6 +223,7 @@ const LessonsScreen = ({ route }) => {
               color="#FE7201"
             />
             <Text style={styles.sectionTitle}>{section.title}</Text>
+            <CircularProgress progress={completedVideos.hasOwnProperty(section.id) ? (completedVideos[section.id].size / 2) * 100: 0} />
           </View>
         </TouchableOpacity>
 
@@ -180,7 +264,7 @@ const LessonsScreen = ({ route }) => {
           <VideoPlayer videoId={currentVideo.video_url} />
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => setCurrentVideo(null)}
+            onPress={openModal}
           >
             <Icon name="close" size={24} color="#FFF" />
           </TouchableOpacity>
@@ -297,6 +381,103 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 8,
   },
+
+
+  centeredView: {
+    flex: 1,
+    //justifyContent: 'center',
+    //alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    //alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    elevation: 2,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonCloseNo: {
+    //backgroundColor: '#2196F3',
+    backgroundColor: "gray",
+  },
+  buttonCloseYes: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    //alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
+  containerModal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  overlayModal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+
+  nextButton: {
+    flex: 1,
+    alignItems: "flex-end",
+    color: "blue",
+    fontSize: 52
+  },
+
+  modalOptions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  }
+
 });
 
 export default LessonsScreen;

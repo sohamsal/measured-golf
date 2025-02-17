@@ -51,12 +51,12 @@ const HomeScreen = () => {
       </Text>
       <View style={[styles.buttonContainer]}>
         <TouchableOpacity style={styles.button} onPress={() => handlePress(0)}>
-          <Text style={[styles.buttonText, { color: "black" }]}>
+          <Text style={[styles.buttonText, { color: "black", fontSize: 16 }]}>
             Schedule Appointments
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => handlePress(1)}>
-          <Text style={[styles.buttonText, { color: "black" }]}>
+          <Text style={[styles.buttonText, { color: "black", fontSize: 16 }]}>
             Register For Events
           </Text>
         </TouchableOpacity>

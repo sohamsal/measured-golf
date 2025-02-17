@@ -1,54 +1,35 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
-const CircularProgress = ({ percent }) => {
-  const radius = 22; // Radius of the circle
-  const strokeWidth = 5;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (percent / 100) * circumference;
-
+const CircularProgress = ({ progress }) => {
   return (
     <View style={styles.container}>
-      <Svg height={radius * 2 + strokeWidth} width={radius * 2 + strokeWidth}>
-        <Circle
-          stroke="#e6e6e6" // Background circle color
-          fill="none"
-          cx={radius + strokeWidth / 2}
-          cy={radius + strokeWidth / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-        />
-        <Circle
-          stroke="#FF6F00" // Progress bar color
-          fill="none"
-          cx={radius + strokeWidth / 2}
-          cy={radius + strokeWidth / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          strokeLinecap="round"
-        />
-      </Svg>
-      <Text style={styles.percentText}>{percent}%</Text>
+      <AnimatedCircularProgress
+        size={60}
+        width={10}
+        fill={progress} // Percentage (0-100)
+        tintColor="#3498db"
+        backgroundColor="#ecf0f1"
+        rotation={0} // Ensures it fills from top
+      >
+        {fill => <Text style={styles.text}>{`${Math.round(fill)}%`}</Text>}
+      </AnimatedCircularProgress>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    //backgroundColor: '##222121',
   },
-  percentText: {
-    position: 'absolute',
+  text: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#FF6F00',
+    color: "white",
   },
 });
 
