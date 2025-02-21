@@ -19,6 +19,26 @@ const questions = [
   "Enter your golf handicap score (0-54)",
 ];
 
+// Convert Q7: Typical 18-Hole Score (18-126) to a rating (1-5)
+const convertScoreToRating = (score) => {
+  if (score >= 18 && score <= 75) return 5;
+  if (score >= 76 && score <= 85) return 4;
+  if (score >= 86 && score <= 95) return 3;
+  if (score >= 96 && score <= 105) return 2;
+  if (score >= 106 && score <= 126) return 1;
+  return 0; // invalid
+};
+
+// Convert Q8: Handicap (0-54) to a rating (1-5)
+const convertHandicapToRating = (handicap) => {
+  if (handicap >= 0 && handicap <= 5) return 5;
+  if (handicap >= 6 && handicap <= 10) return 4;
+  if (handicap >= 11 && handicap <= 20) return 3;
+  if (handicap >= 21 && handicap <= 30) return 2;
+  if (handicap >= 31 && handicap <= 54) return 1;
+  return 0; // invalid
+};
+
 const GolfQuiz = ({ onComplete }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
@@ -36,23 +56,92 @@ const GolfQuiz = ({ onComplete }) => {
     setAnswers(updatedAnswers);
   };
 
+  // Check that the current question has a valid input
   const isValidInput = () => {
     if (currentQuestion === 6) {
       // 18-hole score question
-      return answers[currentQuestion] >= 18 && answers[currentQuestion] <= 126;
+      const val = answers[currentQuestion];
+      return val >= 18 && val <= 126;
     }
     if (currentQuestion === 7) {
       // handicap question
-      return answers[currentQuestion] >= 0 && answers[currentQuestion] <= 54;
+      const val = answers[currentQuestion];
+      return val >= 0 && val <= 54;
     }
+    // For questions 1-6, just ensure they are not null
     return answers[currentQuestion] !== null;
   };
 
+  // Move to the next question, or finalize if it’s the last
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      onComplete(answers);
+      // Compute final skill level with weighting
+
+      // aliases for better readability
+      const q1 = answers[0];
+      const q2 = answers[1];
+      const q3 = answers[2];
+      const q4 = answers[3];
+      const q5 = answers[4];
+      const q6 = answers[5];
+      const q7 = answers[6];
+      const q8 = answers[7];
+
+      // convert them to numeric
+      const numQ1 = Number(q1);
+      const numQ2 = Number(q2);
+      const numQ3 = Number(q3);
+      const numQ4 = Number(q4);
+      const numQ5 = Number(q5);
+      const numQ6 = Number(q6);
+      const numQ7 = Number(q7);
+      const numQ8 = Number(q8);
+
+      // Weights
+      const weightQ1 = 2; // Q1
+      const weightQ2 = 3; // Q2
+      const weightQ3 = 2; // Q3
+      const weightQ4 = 3; // Q4
+      const weightQ5 = 3; // Q5
+      const weightQ6 = 2; // Q6
+      const weightQ7 = 3; // Q7
+      const weightQ8 = 3; // Q8
+
+      // Score for Q1-Q6 (1-5 scale)
+      const score1 = numQ1 * weightQ1;
+      const score2 = numQ2 * weightQ2;
+      const score3 = numQ3 * weightQ3;
+      const score4 = numQ4 * weightQ4;
+      const score5 = numQ5 * weightQ5;
+      const score6 = numQ6 * weightQ6;
+
+      // Convert Q7 (score) and Q8 (handicap) to a rating, then multiply by weight
+      const ratingQ7 = convertScoreToRating(numQ7);
+      const weightedQ7 = ratingQ7 * weightQ7;
+
+      const ratingQ8 = convertHandicapToRating(numQ8);
+      const weightedQ8 = ratingQ8 * weightQ8;
+
+      // Total
+      const totalScore =
+        score1 + score2 + score3 + score4 + score5 + score6 + weightedQ7 + weightedQ8;
+
+      // Determine skill level
+      let skillLevel = "";
+      if (totalScore >= 21 && totalScore <= 49) {
+        skillLevel = "Beginner";
+      } else if (totalScore >= 50 && totalScore <= 77) {
+        skillLevel = "Intermediate";
+      } else if (totalScore >= 78 && totalScore <= 105) {
+        skillLevel = "Advanced";
+      } else {
+        skillLevel = "Invalid Score";
+      }
+
+      // Pass skillLevel to parent
+      onComplete(skillLevel);
     }
   };
 
@@ -64,7 +153,7 @@ const GolfQuiz = ({ onComplete }) => {
       <Text style={styles.questionText}>{questions[currentQuestion]}</Text>
 
       {currentQuestion < 6 ? (
-        // Rating options for first 6 questions
+        // Rating options (1-5) for first 6 questions
         <View style={styles.optionContainer}>
           {[1, 2, 3, 4, 5].map((num) => (
             <TouchableOpacity
@@ -80,7 +169,7 @@ const GolfQuiz = ({ onComplete }) => {
           ))}
         </View>
       ) : (
-        // Number input for last 2 questions
+        // Number input for questions 7 & 8
         <View style={styles.numberInputContainer}>
           <TextInput
             style={styles.numberInput}
@@ -93,7 +182,9 @@ const GolfQuiz = ({ onComplete }) => {
           {answers[currentQuestion] !== null && !isValidInput() && (
             <Text style={styles.errorText}>
               Please enter a valid{" "}
-              {currentQuestion === 6 ? "score (18-126)" : "handicap (0-54)"}
+              {currentQuestion === 6
+                ? "score (18-126)"
+                : "handicap (0-54)"}
             </Text>
           )}
         </View>
@@ -109,6 +200,10 @@ const GolfQuiz = ({ onComplete }) => {
     </View>
   );
 };
+
+export default GolfQuiz;
+
+// =========== STYLES ===========
 
 const styles = StyleSheet.create({
   container: {
@@ -150,11 +245,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
   },
-  nextButton: {
-    backgroundColor: "#FC7108",
-    padding: 12,
-    borderRadius: 30,
-  },
   numberInputContainer: {
     width: "100%",
     marginBottom: 20,
@@ -166,7 +256,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 18,
     textAlign: "center",
-    width: "100%",
   },
   errorText: {
     color: "#ff6b6b",
@@ -174,10 +263,13 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: "center",
   },
+  nextButton: {
+    backgroundColor: "#FC7108",
+    padding: 12,
+    borderRadius: 30,
+  },
   disabledButton: {
     backgroundColor: "#666",
     opacity: 0.5,
   },
 });
-
-export default GolfQuiz;

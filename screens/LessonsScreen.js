@@ -65,9 +65,11 @@ const LessonsScreen = () => {
   const [sections, setSections] = useState(SAMPLE_SECTIONS);
   const [completedVideos, setCompletedVideos] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
+  const [quizSkillLevel, setQuizSkillLevel] = useState(""); // NEW: store skill level
 
   // Called when user completes the quiz
-  const handleQuizCompletion = () => {
+  const handleQuizCompletion = (skillLevel) => {
+    setQuizSkillLevel(skillLevel);    // store the skill level
     setHasCompletedQuiz(true);
   };
 
@@ -173,7 +175,10 @@ const LessonsScreen = () => {
               </TouchableOpacity>
             </View>
           )}
-
+          {!currentVideo && <Text style={styles.skillLevelText}>
+            Your Skill Level: {quizSkillLevel}
+          </Text>
+          }
           <Text style={{ marginTop: 15, marginLeft: 20, fontSize: 24, fontWeight: 'bold', color: '#FFF' }}>All sections</Text>
           <ScrollView style={styles.scrollContainer}>
             {sections.map(renderSection)}
@@ -218,6 +223,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#222121",
+  },
+  skillLevelText: {
+    fontSize: 18,
+    color: "#FFF",
+    textAlign: "center",
+    marginBottom: 20,
   },
   quizContainer: {
     flex: 1,
