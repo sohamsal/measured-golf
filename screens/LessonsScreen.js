@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
-  SafeAreaView,
   Text,
-  StyleSheet,
+  SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  StyleSheet,
   Modal,
-  Button,
-  Pressable
+  Pressable,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
+import GolfQuiz from "./Quiz"; // Import the GolfQuiz component
 import VideoPlayer from "./VideoPlayer";
-// import { supabase } from "../lib/supabase";
-import { useNavigation } from "@react-navigation/native";
-import CircularProgress from './CircularProgress'
+import CircularProgress from "./CircularProgress";
+import Icon from "react-native-vector-icons/Ionicons";
 
+// Sample Lesson Data
 const SAMPLE_SECTIONS = [
   {
     id: 1,
@@ -25,15 +24,15 @@ const SAMPLE_SECTIONS = [
         id: "v1",
         title: "Grip and Stance",
         description: "Learn the proper putting grip and stance fundamentals",
-        video_url: "dQw4w9WgXcQ",
+        video_url: "vmG6WkRQx2c",
         watched_fully: false,
       },
       {
         id: "v2",
-        title: "Reading Greens",
-        description: "Master the art of reading putting greens",
-        video_url: "dQw4w9WgXcQ",
-        watched_fully: true,
+        title: "Difference Between Sway and Horizontal Force",
+        description: "Join The Force Plate Guy ... create more speed ... control low point ...",
+        video_url: "jytxx04llcI",
+        watched_fully: false,
       },
     ],
   },
@@ -43,175 +42,66 @@ const SAMPLE_SECTIONS = [
     videos: [
       {
         id: "v3",
-        title: "Tee Height",
-        description: "Proper tee height for maximum distance",
-        video_url: "dQw4w9WgXcQ",
+        title: "Triggering The Action Forces",
+        description: "Join The Force Plate Guy ... more speed ... reactionary environment ...",
+        video_url: "zOFV00KZIRI",
         watched_fully: false,
       },
       {
         id: "v4",
-        title: "Swing Path",
-        description: "Correct swing path for straighter drives",
-        video_url: "dQw4w9WgXcQ",
+        title: "Using the Lead Side for More Power",
+        description: "Join The Force Plate Guy ... how the lead side of the body is used to create power ...",
+        video_url: "Gf08Mp68fXc",
         watched_fully: false,
       },
     ],
   },
 ];
 
-const LessonsScreen = ({ route }) => {
-  const navigation = useNavigation();
+const LessonsScreen = () => {
+  const [hasCompletedQuiz, setHasCompletedQuiz] = useState(false);
   const [expandedSection, setExpandedSection] = useState(null);
   const [currentVideo, setCurrentVideo] = useState(null);
-  const [sections, setSections] = useState([]);
-  const [error, setError] = useState(null);
+  const [sections, setSections] = useState(SAMPLE_SECTIONS);
+  const [completedVideos, setCompletedVideos] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisibleQuiz, setModalVisibleQuiz] = useState(false);
-  const [videoComplete, setVideoComplete] = useState(false)
-  const [percent, setPercent] = useState(0)
-  const [completedVideos, setcompletedVideos] = useState({})
 
-  //TODO: put this into the db
+  // Called when user completes the quiz
+  const handleQuizCompletion = () => {
+    setHasCompletedQuiz(true);
+  };
 
-  // Fetch course sections and videos from Supabase
-  async function fetchCourseSections() {
-    try {
-      // const { data, error } = await supabase
-      //   .from("course_sections")
-      //   .select(
-      //     `
-      //     id,
-      //     title,
-      //     videos (
-      //       id,
-      //       title,
-      //       description,
-      //       video_url,
-      //       watched_fully
-      //     )
-      //   `
-      //   )
-      //   .order("section_order", { ascending: true });
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setSections(SAMPLE_SECTIONS);
-
-      if (error) {
-        setError("Failed to load course content");
-        return;
-      }
-
-      setSections(data);
-    } catch (err) {
-      setError("An unexpected error occurred");
-    }
-  }
-
-  useEffect(() => {
-    fetchCourseSections();
-  }, []);
-
+  // Toggle expansion of a section
   const handleSectionPress = (sectionId) => {
     setExpandedSection(expandedSection === sectionId ? null : sectionId);
   };
 
+  // Select a video to watch
   const handleVideoSelect = (video) => {
     setCurrentVideo(video);
-    // markVideoAsWatched(video.id);
+    // setModalVisible(true);
   };
 
-  // const markVideoAsWatched = async (videoId) => {
-  //   try {
-  //     const { error } = await supabase
-  //       .from("videos")
-  //       .update({ watched_fully: true })
-  //       .eq("id", videoId);
-
-  //     if (error) {
-  //       console.error("Error marking video as watched:", error);
-  //     }
-  //   } catch (err) {
-  //     console.error("Unexpected error:", err);
-  //   }
-  // };
-
-  function openModal() {
-    setModalVisible(true);
-  }
-  function makeProgress() {
-    console.log(expandedSection)
-    var copyState = { ...completedVideos}; //create a new copy
-    if (!copyState.hasOwnProperty(expandedSection)) {
-      copyState[expandedSection] = new Set()
-    }
-    console.log(currentVideo.id)
-    if (!copyState[expandedSection].has(currentVideo.id)) {
-      copyState[expandedSection].add(currentVideo.id);
-    }
-    setcompletedVideos(copyState);
-    closeVideo();
-    //TODO: hardcoded 2 videos per section, to change later to be more flexible
-    if (copyState[expandedSection].size == 2) {
-      setModalVisibleQuiz(true);
+  // Mark the current video as fully watched
+  function markVideoAsWatched() {
+    if (currentVideo) {
+      let updatedVideos = { ...completedVideos };
+      if (!updatedVideos[expandedSection]) {
+        updatedVideos[expandedSection] = new Set();
+      }
+      updatedVideos[expandedSection].add(currentVideo.id);
+      setCompletedVideos(updatedVideos);
+      setModalVisible(false);
+      setCurrentVideo(null);
     }
   }
 
-  function closeVideo() {
-    setCurrentVideo(null);
-    setModalVisible(!modalVisible)
-  }
-
-
-  // Render a single section
+  // Render each lesson section and its videos
   const renderSection = (section) => {
     const isExpanded = expandedSection === section.id;
 
     return (
       <View key={section.id} style={styles.sectionContainer}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Did you finish watching this video?</Text>
-              <View style={styles.modalOptions}>
-                <Pressable
-                  style={[styles.button, styles.buttonCloseNo]}
-                  onPress={() => closeVideo()}>
-                  <Text style={styles.textStyle}>No</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, styles.buttonCloseYes]}
-                  onPress={() => makeProgress(section.id)}>
-                  <Text style={styles.textStyle}>Yes</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisibleQuiz}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Congrats! You have finished {section.title}!</Text>
-              <Text style={styles.modalText}>Want to take a quick quiz to test your knowledge?</Text>
-              <View style={styles.modalOptions}>
-                <Pressable
-                  style={[styles.button, styles.buttonCloseNo]}
-                  onPress={() => setModalVisibleQuiz(false)}>
-                  <Text style={styles.textStyle}>No</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, styles.buttonCloseYes]}
-                  onPress={() => setModalVisibleQuiz(false)}>
-                  <Text style={styles.textStyle}>Yes</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
         <TouchableOpacity
           style={styles.sectionHeader}
           onPress={() => handleSectionPress(section.id)}
@@ -223,8 +113,14 @@ const LessonsScreen = ({ route }) => {
               color="#FE7201"
             />
             <Text style={styles.sectionTitle}>{section.title}</Text>
-            <CircularProgress progress={completedVideos.hasOwnProperty(section.id) ? (completedVideos[section.id].size / 2) * 100: 0} />
           </View>
+          <CircularProgress
+                progress={
+                  completedVideos[section.id]
+                    ? (completedVideos[section.id].size / section.videos.length) * 100
+                    : 0
+                }
+              />
         </TouchableOpacity>
 
         {isExpanded && (
@@ -239,10 +135,8 @@ const LessonsScreen = ({ route }) => {
                   <Icon name="play" size={30} color="#FE7201" />
                 </View>
                 <View style={styles.videoInfo}>
-                  <Text style={styles.videoTitle}>Video {index + 1}</Text>
-                  <Text style={styles.videoDescription}>
-                    {video.description}
-                  </Text>
+                  <Text style={styles.videoTitle}>{video.title}</Text>
+                  <Text style={styles.videoDescription}>{video.description}</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -254,60 +148,122 @@ const LessonsScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <Text style={styles.mainTitle}>
-          Lessons
-        </Text>
-      </View>
-      {currentVideo && (
-        <View style={styles.videoPlayerContainer}>
-          <VideoPlayer videoId={currentVideo.video_url} />
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={openModal}
-          >
-            <Icon name="close" size={24} color="#FFF" />
-          </TouchableOpacity>
+      {/* If quiz not completed, show quiz */}
+      {!hasCompletedQuiz ? (
+        <View style={styles.quizContainer}>
+          <Text style={styles.quizTitle}>Golf Skill Assessment</Text>
+          <Text style={styles.quizSubtitle}>
+            Let's determine your current skill level to personalize your learning journey.
+          </Text>
+          <GolfQuiz onComplete={handleQuizCompletion} />
         </View>
-      )}
+      ) : (
+        <>
+          <Text style={styles.mainTitle}>Lessons</Text>
 
-      <ScrollView style={styles.scrollContainer}>
-        {sections.map(renderSection)}
-      </ScrollView>
+          {/* Show selected video at the top, then list of lessons */}
+          {currentVideo && (
+            <View style={styles.videoPlayerContainer}>
+              <VideoPlayer videoId={currentVideo.video_url} />
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(true)}
+              >
+                <Icon name="close" size={24} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <Text style={{ marginTop: 15, marginLeft: 20, fontSize: 24, fontWeight: 'bold', color: '#FFF' }}>All sections</Text>
+          <ScrollView style={styles.scrollContainer}>
+            {sections.map(renderSection)}
+          </ScrollView>
+
+          {/* Modal for marking video as watched */}
+          <Modal animationType="slide" transparent={true} visible={modalVisible}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>
+                  Did you finish watching this video?
+                </Text>
+                <View style={styles.modalOptions}>
+                  <Pressable
+                    style={[styles.button, styles.buttonCloseNo]}
+                    onPress={markVideoAsWatched}
+                  >
+                    <Text style={styles.textStyle}>Yes</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonCloseYes]}
+                    onPress={() => setModalVisible(false)}
+                  >
+                    <Text style={styles.textStyle}>No</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </>
+      )}
     </SafeAreaView>
   );
 };
 
+/* ===========================
+   STYLES
+   (Added zIndex to videoPlayerContainer and closeButton
+    so clicks/taps can occur while video is playing)
+=========================== */
 const styles = StyleSheet.create({
-  mainTitle: {
-    fontSize: 52,
-    color: '#FFF',
-    marginLeft: '5%',
-    marginTop: '10%',
-    fontWeight: 'bold',
-    marginBottom: '5%',
-  },
   container: {
     flex: 1,
-    backgroundColor: '#222121',
+    backgroundColor: "#222121",
   },
+  quizContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  quizTitle: {
+    fontSize: 28,
+    color: "#FFF",
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  quizSubtitle: {
+    fontSize: 16,
+    color: "#CCC",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  mainTitle: {
+    fontSize: 48,
+    fontWeight: "bold",
+    color: "#FFF",
+    textAlign: "center",
+    marginBottom: 20,
+    margin: 20,
+  },
+  /* Scroll container that holds the sections */
   scrollContainer: {
     flex: 1,
     padding: 16,
+    zIndex: 1, // keep it below the video container
   },
+  /* Sections + videos layout */
   sectionContainer: {
     marginBottom: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#222121",
-    overflow: "hidden",
   },
   sectionHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-between", 
     alignItems: "center",
+    // flexDirection: "row",
+    // alignItems: "center",
     padding: 16,
     backgroundColor: "#111",
+    borderRadius: 8,
   },
   sectionTitleContainer: {
     flexDirection: "row",
@@ -319,59 +275,47 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginLeft: 8,
   },
-  clickContainer: {
-    backgroundColor: "#FFF",
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: "#FF0000",
-    padding: 4,
-    paddingHorizontal: 8,
-  },
-  clickText: {
-    color: "#FF0000",
-    fontSize: 12,
-  },
   videosContainer: {
     padding: 16,
-    backgroundColor: "#111111",
+    backgroundColor: "#111",
+    borderRadius: 8,
+    marginTop: -2,
   },
   videoItem: {
     flexDirection: "row",
-    backgroundColor: "#222121",
-    borderRadius: 8,
     padding: 12,
     marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#000000",
   },
   videoThumbnail: {
     width: 80,
-    height: 80,
+    height: 60,
     backgroundColor: "#333",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
   },
   videoInfo: {
-    flex: 1,
     marginLeft: 12,
+    flex: 1,
     justifyContent: "center",
   },
   videoTitle: {
     fontSize: 16,
     fontWeight: "500",
+    color: "#FFF",
     marginBottom: 4,
-    color: '#FFF'
   },
   videoDescription: {
     fontSize: 14,
-    color: "#CCCCCC",
+    color: "#CCC",
   },
+  /* Video player container + close button */
   videoPlayerContainer: {
     width: "100%",
     aspectRatio: 16 / 9,
     backgroundColor: "#000",
     position: "relative",
+    zIndex: 10, // bring the video container above scroll
   },
   closeButton: {
     position: "absolute",
@@ -380,104 +324,53 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 20,
     padding: 8,
+    zIndex: 11, // ensure the close button is above the video
   },
-
-
+  /* Modal styling */
   centeredView: {
     flex: 1,
-    //justifyContent: 'center',
-    //alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "#222",
+    color: '#FFF',
     borderRadius: 20,
     padding: 35,
-    //alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-    elevation: 2,
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonCloseNo: {
-    //backgroundColor: '#2196F3',
-    backgroundColor: "gray",
-  },
-  buttonCloseYes: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
+    color: '#FFF'
   },
-
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    //alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-
-  containerModal: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  overlayModal: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-
-  nextButton: {
-    flex: 1,
-    alignItems: "flex-end",
-    color: "blue",
-    fontSize: 52
-  },
-
   modalOptions: {
     flexDirection: "row",
     justifyContent: "space-between",
-  }
-
+  },
+  button: {
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    elevation: 2,
+    marginHorizontal: 5,
+  },
+  buttonCloseYes: {
+    backgroundColor: "gray",
+  },
+  buttonCloseNo: {
+    backgroundColor: "#FE7201",
+  },
+  textStyle: {
+    color: "#FFF",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });
 
 export default LessonsScreen;

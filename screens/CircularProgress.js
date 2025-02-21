@@ -4,12 +4,12 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 const CircularProgress = ({ progress }) => {
   return (
-    <View style={styles.container}>
+    <View>
       <AnimatedCircularProgress
-        size={60}
-        width={10}
+        size={50}
+        width={7}
         fill={progress} // Percentage (0-100)
-        tintColor="#3498db"
+        tintColor="#FC7108"
         backgroundColor="#ecf0f1"
         rotation={0} // Ensures it fills from top
       >
@@ -20,14 +20,8 @@ const CircularProgress = ({ progress }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    //backgroundColor: '##222121',
-  },
   text: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: "white",
   },

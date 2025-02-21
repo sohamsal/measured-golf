@@ -31,23 +31,23 @@ const Tabs = ({ user }) => {
           shadowColor: "black",
           shadowRadius: 5,
           shadowOpacity: 1.0,
-          height: windowHeight * 0.12,
+          height: windowHeight * 0.10,
           marginBottom: 0,
           backgroundColor: "#111",
-          borderTopColor: '#111',
+          borderTopColor: "#111",
           elevation: 0, // This line removes the small white border around the bottom bar
-          justifyContent: 'space-between', // This line horizontally aligns the icons
-          paddingBottom: 10,  // Add padding at the bottom
-          paddingTop: 7,    // Add padding at the top
+          justifyContent: "space-between", // This line horizontally aligns the icons
+          paddingBottom: 10, // Add padding at the bottom
+          paddingTop: 10, // Add padding at the top
         },
         tabBarItemStyle: {
-          justifyContent: 'center',  // Center icons vertically
-          alignItems: 'center',      // Center icons horizontally
-          paddingVertical: 2,       // Add some vertical padding
+          justifyContent: "center", // Center icons vertically
+          alignItems: "center", // Center icons horizontally
+          paddingVertical: 2, // Add some vertical padding
         },
         // Optional: if you want to adjust the label position
         tabBarLabelStyle: {
-          marginBottom: 2,  // Adjust space between icon and label
+          marginBottom: 2, // Adjust space between icon and label
         },
       }}
     >
@@ -93,7 +93,7 @@ const Tabs = ({ user }) => {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name={"Profile"}
         component={ProfileScreen}
         options={{
@@ -106,7 +106,7 @@ const Tabs = ({ user }) => {
             />
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
