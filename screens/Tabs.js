@@ -2,11 +2,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import HomeScreen from "./HomeScreen";
 import ProfileScreen from "./ProfileScreen";
 // import Catalog from "./Catalog";
 import { Dimensions } from "react-native";
 import LessonsScreen from "./LessonsScreen";
+import AssessmentScreen from "./AssessmentScreen";
 // import CatalogStack from "./CatalogStack";
 
 const windowWidth = Dimensions.get("window").width;
@@ -31,7 +33,7 @@ const Tabs = ({ user }) => {
           shadowColor: "black",
           shadowRadius: 5,
           shadowOpacity: 1.0,
-          height: windowHeight * 0.10,
+          height: windowHeight * 0.1,
           marginBottom: 0,
           backgroundColor: "#111",
           borderTopColor: "#111",
@@ -87,6 +89,20 @@ const Tabs = ({ user }) => {
           tabBarIcon: ({ focused }) => (
             <FontAwesome
               name="book"
+              size={focused ? 28 : 24}
+              color={focused ? "white" : "white"}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name={"Assessment"}
+        component={AssessmentScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="golf"
               size={focused ? 28 : 24}
               color={focused ? "white" : "white"}
             />

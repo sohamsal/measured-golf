@@ -9,7 +9,6 @@ import {
   Modal,
   Pressable,
 } from "react-native";
-import GolfQuiz from "./Quiz"; // Import the GolfQuiz component
 import VideoPlayer from "./VideoPlayer";
 import CircularProgress from "./CircularProgress";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -30,7 +29,8 @@ const SAMPLE_SECTIONS = [
       {
         id: "v2",
         title: "Difference Between Sway and Horizontal Force",
-        description: "Join The Force Plate Guy ... create more speed ... control low point ...",
+        description:
+          "Join The Force Plate Guy ... create more speed ... control low point ...",
         video_url: "jytxx04llcI",
         watched_fully: false,
       },
@@ -43,14 +43,16 @@ const SAMPLE_SECTIONS = [
       {
         id: "v3",
         title: "Triggering The Action Forces",
-        description: "Join The Force Plate Guy ... more speed ... reactionary environment ...",
+        description:
+          "Join The Force Plate Guy ... more speed ... reactionary environment ...",
         video_url: "zOFV00KZIRI",
         watched_fully: false,
       },
       {
         id: "v4",
         title: "Using the Lead Side for More Power",
-        description: "Join The Force Plate Guy ... how the lead side of the body is used to create power ...",
+        description:
+          "Join The Force Plate Guy ... how the lead side of the body is used to create power ...",
         video_url: "Gf08Mp68fXc",
         watched_fully: false,
       },
@@ -59,19 +61,11 @@ const SAMPLE_SECTIONS = [
 ];
 
 const LessonsScreen = () => {
-  const [hasCompletedQuiz, setHasCompletedQuiz] = useState(false);
   const [expandedSection, setExpandedSection] = useState(null);
   const [currentVideo, setCurrentVideo] = useState(null);
   const [sections, setSections] = useState(SAMPLE_SECTIONS);
   const [completedVideos, setCompletedVideos] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [quizSkillLevel, setQuizSkillLevel] = useState(""); // NEW: store skill level
-
-  // Called when user completes the quiz
-  const handleQuizCompletion = (skillLevel) => {
-    setQuizSkillLevel(skillLevel);    // store the skill level
-    setHasCompletedQuiz(true);
-  };
 
   // Toggle expansion of a section
   const handleSectionPress = (sectionId) => {
@@ -117,12 +111,13 @@ const LessonsScreen = () => {
             <Text style={styles.sectionTitle}>{section.title}</Text>
           </View>
           <CircularProgress
-                progress={
-                  completedVideos[section.id]
-                    ? (completedVideos[section.id].size / section.videos.length) * 100
-                    : 0
-                }
-              />
+            progress={
+              completedVideos[section.id]
+                ? (completedVideos[section.id].size / section.videos.length) *
+                  100
+                : 0
+            }
+          />
         </TouchableOpacity>
 
         {isExpanded && (
@@ -138,7 +133,9 @@ const LessonsScreen = () => {
                 </View>
                 <View style={styles.videoInfo}>
                   <Text style={styles.videoTitle}>{video.title}</Text>
-                  <Text style={styles.videoDescription}>{video.description}</Text>
+                  <Text style={styles.videoDescription}>
+                    {video.description}
+                  </Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -150,66 +147,59 @@ const LessonsScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* If quiz not completed, show quiz */}
-      {!hasCompletedQuiz ? (
-        <View style={styles.quizContainer}>
-          <Text style={styles.quizTitle}>Golf Skill Assessment</Text>
-          <Text style={styles.quizSubtitle}>
-            Let's determine your current skill level to personalize your learning journey.
-          </Text>
-          <GolfQuiz onComplete={handleQuizCompletion} />
+      <Text style={styles.mainTitle}>Lessons</Text>
+
+      {/* Show selected video at the top, then list of lessons */}
+      {currentVideo && (
+        <View style={styles.videoPlayerContainer}>
+          <VideoPlayer videoId={currentVideo.video_url} />
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Icon name="close" size={24} color="#FFF" />
+          </TouchableOpacity>
         </View>
-      ) : (
-        <>
-          <Text style={styles.mainTitle}>Lessons</Text>
-
-          {/* Show selected video at the top, then list of lessons */}
-          {currentVideo && (
-            <View style={styles.videoPlayerContainer}>
-              <VideoPlayer videoId={currentVideo.video_url} />
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setModalVisible(true)}
-              >
-                <Icon name="close" size={24} color="#FFF" />
-              </TouchableOpacity>
-            </View>
-          )}
-          {!currentVideo && <Text style={styles.skillLevelText}>
-            Your Skill Level: {quizSkillLevel}
-          </Text>
-          }
-          <Text style={{ marginTop: 15, marginLeft: 20, fontSize: 24, fontWeight: 'bold', color: '#FFF' }}>All sections</Text>
-          <ScrollView style={styles.scrollContainer}>
-            {sections.map(renderSection)}
-          </ScrollView>
-
-          {/* Modal for marking video as watched */}
-          <Modal animationType="slide" transparent={true} visible={modalVisible}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>
-                  Did you finish watching this video?
-                </Text>
-                <View style={styles.modalOptions}>
-                  <Pressable
-                    style={[styles.button, styles.buttonCloseNo]}
-                    onPress={markVideoAsWatched}
-                  >
-                    <Text style={styles.textStyle}>Yes</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[styles.button, styles.buttonCloseYes]}
-                    onPress={() => setModalVisible(false)}
-                  >
-                    <Text style={styles.textStyle}>No</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </Modal>
-        </>
       )}
+      <Text
+        style={{
+          marginTop: 15,
+          marginLeft: 20,
+          fontSize: 24,
+          fontWeight: "bold",
+          color: "#FFF",
+        }}
+      >
+        All sections
+      </Text>
+      <ScrollView style={styles.scrollContainer}>
+        {sections.map(renderSection)}
+      </ScrollView>
+
+      {/* Modal for marking video as watched */}
+      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Did you finish watching this video?
+            </Text>
+            <View style={styles.modalOptions}>
+              <Pressable
+                style={[styles.button, styles.buttonCloseNo]}
+                onPress={markVideoAsWatched}
+              >
+                <Text style={styles.textStyle}>Yes</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonCloseYes]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.textStyle}>No</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -223,30 +213,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#222121",
-  },
-  skillLevelText: {
-    fontSize: 18,
-    color: "#FFF",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  quizContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  quizTitle: {
-    fontSize: 28,
-    color: "#FFF",
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  quizSubtitle: {
-    fontSize: 16,
-    color: "#CCC",
-    textAlign: "center",
-    marginBottom: 30,
   },
   mainTitle: {
     fontSize: 48,
@@ -268,7 +234,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     flexDirection: "row",
-    justifyContent: "space-between", 
+    justifyContent: "space-between",
     alignItems: "center",
     // flexDirection: "row",
     // alignItems: "center",
@@ -346,7 +312,7 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: "#222",
-    color: '#FFF',
+    color: "#FFF",
     borderRadius: 20,
     padding: 35,
     shadowColor: "#000",
@@ -358,7 +324,7 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center",
-    color: '#FFF'
+    color: "#FFF",
   },
   modalOptions: {
     flexDirection: "row",
