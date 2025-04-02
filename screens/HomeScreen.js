@@ -12,6 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { supabase } from "../lib/supabase";
+import PaymentScreen from "./PaymentScreen";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -49,6 +51,9 @@ const HomeScreen = () => {
       <Text style={[styles.welcomeText, { marginTop: "10%" }]}>
         Welcome, {fullName || "User"}!
       </Text>
+      <StripeProvider publishableKey="pk_test_51R4URQKLkCSWge1iYQT5CSRLoMmrW8xiXxJe09E01W23VVHFLyFSjk0o3ajm00iMdcVhzT9DUo6amlNpGBtJl71c00rmgZNbZ1">
+        <PaymentScreen />
+      </StripeProvider>
       <View style={[styles.buttonContainer]}>
         <TouchableOpacity style={styles.button} onPress={() => handlePress(0)}>
           <Text style={[styles.buttonText, { color: "black", fontSize: 16 }]}>
