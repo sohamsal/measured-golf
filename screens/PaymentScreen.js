@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Button, Alert, ActivityIndicator } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 
-const yourIpAddress = "PUT YOUR IP ADDRESS HERE"
+const yourIpAddress = "35.2.44.187"
 
 const PaymentScreen = () => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();

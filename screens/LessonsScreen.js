@@ -25,6 +25,7 @@ const SAMPLE_SECTIONS = [
         description: "Learn the proper putting grip and stance fundamentals",
         video_url: "vmG6WkRQx2c",
         watched_fully: false,
+        tag: ["Putting", "Driving"],
       },
       {
         id: "v2",
@@ -33,6 +34,7 @@ const SAMPLE_SECTIONS = [
           "Join The Force Plate Guy ... create more speed ... control low point ...",
         video_url: "jytxx04llcI",
         watched_fully: false,
+        tag: ["Putting"],
       },
     ],
   },
@@ -47,6 +49,7 @@ const SAMPLE_SECTIONS = [
           "Join The Force Plate Guy ... more speed ... reactionary environment ...",
         video_url: "zOFV00KZIRI",
         watched_fully: false,
+        tag: ["Driving"],
       },
       {
         id: "v4",
@@ -55,10 +58,20 @@ const SAMPLE_SECTIONS = [
           "Join The Force Plate Guy ... how the lead side of the body is used to create power ...",
         video_url: "Gf08Mp68fXc",
         watched_fully: false,
+        tag: ["Driving"],
       },
     ],
   },
 ];
+
+const getAllVideos = (sections) => {
+  return sections.flatMap((section) =>
+    section.videos.map((video) => ({
+      ...video,
+      sectionId: section.id,
+    }))
+  );
+};
 
 const LessonsScreen = () => {
   const [expandedSection, setExpandedSection] = useState(null);
@@ -67,32 +80,70 @@ const LessonsScreen = () => {
   const [completedVideos, setCompletedVideos] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Toggle expansion of a section
   const handleSectionPress = (sectionId) => {
     setExpandedSection(expandedSection === sectionId ? null : sectionId);
   };
 
-  // Select a video to watch
   const handleVideoSelect = (video) => {
     setCurrentVideo(video);
-    // setModalVisible(true);
   };
 
-  // Mark the current video as fully watched
   function markVideoAsWatched() {
     if (currentVideo) {
       let updatedVideos = { ...completedVideos };
-      if (!updatedVideos[expandedSection]) {
-        updatedVideos[expandedSection] = new Set();
+      if (!updatedVideos[currentVideo.sectionId]) {
+        updatedVideos[currentVideo.sectionId] = new Set();
       }
-      updatedVideos[expandedSection].add(currentVideo.id);
+      updatedVideos[currentVideo.sectionId].add(currentVideo.id);
       setCompletedVideos(updatedVideos);
       setModalVisible(false);
       setCurrentVideo(null);
     }
   }
 
-  // Render each lesson section and its videos
+  const renderAllVideosSection = () => {
+    const allVideos = getAllVideos(sections);
+
+    return (
+      <View style={styles.sectionContainer}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleContainer}>
+            <Icon name="film-outline" size={24} color="#FE7201" />
+            <Text style={styles.sectionTitle}>Recommended</Text>
+          </View>
+        </View>
+
+        <View style={styles.videosContainer}>
+          {allVideos.map((video) => (
+            <TouchableOpacity
+              key={video.id}
+              style={styles.videoItem}
+              onPress={() => {
+                setExpandedSection(video.sectionId);
+                handleVideoSelect(video);
+              }}
+            >
+              <View style={styles.videoThumbnail}>
+                <Icon name="play" size={30} color="#FE7201" />
+              </View>
+              <View style={styles.videoInfo}>
+                <Text style={styles.videoTitle}>{video.title}</Text>
+                <Text style={styles.videoDescription}>{video.description}</Text>
+                <View style={styles.tagsContainer}>
+                  {video.tag.map((tag, index) => (
+                    <View key={index} style={styles.tagBubble}>
+                      <Text style={styles.tagText}>{tag}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
   const renderSection = (section) => {
     const isExpanded = expandedSection === section.id;
 
@@ -113,8 +164,7 @@ const LessonsScreen = () => {
           <CircularProgress
             progress={
               completedVideos[section.id]
-                ? (completedVideos[section.id].size / section.videos.length) *
-                  100
+                ? (completedVideos[section.id].size / section.videos.length) * 100
                 : 0
             }
           />
@@ -122,20 +172,25 @@ const LessonsScreen = () => {
 
         {isExpanded && (
           <View style={styles.videosContainer}>
-            {section.videos.map((video, index) => (
+            {section.videos.map((video) => (
               <TouchableOpacity
                 key={video.id}
                 style={styles.videoItem}
-                onPress={() => handleVideoSelect(video)}
+                onPress={() => handleVideoSelect({ ...video, sectionId: section.id })}
               >
                 <View style={styles.videoThumbnail}>
                   <Icon name="play" size={30} color="#FE7201" />
                 </View>
                 <View style={styles.videoInfo}>
                   <Text style={styles.videoTitle}>{video.title}</Text>
-                  <Text style={styles.videoDescription}>
-                    {video.description}
-                  </Text>
+                  <Text style={styles.videoDescription}>{video.description}</Text>
+                  <View style={styles.tagsContainer}>
+                    {video.tag.map((tag, index) => (
+                      <View key={index} style={styles.tagBubble}>
+                        <Text style={styles.tagText}>{tag}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
               </TouchableOpacity>
             ))}
@@ -149,7 +204,6 @@ const LessonsScreen = () => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.mainTitle}>Lessons</Text>
 
-      {/* Show selected video at the top, then list of lessons */}
       {currentVideo && (
         <View style={styles.videoPlayerContainer}>
           <VideoPlayer videoId={currentVideo.video_url} />
@@ -161,28 +215,27 @@ const LessonsScreen = () => {
           </TouchableOpacity>
         </View>
       )}
-      <Text
-        style={{
-          marginTop: 15,
-          marginLeft: 20,
-          fontSize: 24,
-          fontWeight: "bold",
-          color: "#FFF",
-        }}
-      >
-        All sections
-      </Text>
+
       <ScrollView style={styles.scrollContainer}>
+        {renderAllVideosSection()}
+        <Text
+          style={{
+            marginTop: 15,
+            marginBottom: 15,
+            fontSize: 24,
+            fontWeight: "bold",
+            color: "#FFF",
+          }}
+        >
+          All Sections
+        </Text>
         {sections.map(renderSection)}
       </ScrollView>
 
-      {/* Modal for marking video as watched */}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>
-              Did you finish watching this video?
-            </Text>
+            <Text style={styles.modalText}>Did you finish watching this video?</Text>
             <View style={styles.modalOptions}>
               <Pressable
                 style={[styles.button, styles.buttonCloseNo]}
@@ -206,8 +259,6 @@ const LessonsScreen = () => {
 
 /* ===========================
    STYLES
-   (Added zIndex to videoPlayerContainer and closeButton
-    so clicks/taps can occur while video is playing)
 =========================== */
 const styles = StyleSheet.create({
   container: {
@@ -222,13 +273,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     margin: 20,
   },
-  /* Scroll container that holds the sections */
   scrollContainer: {
     flex: 1,
     padding: 16,
-    zIndex: 1, // keep it below the video container
+    zIndex: 1,
   },
-  /* Sections + videos layout */
   sectionContainer: {
     marginBottom: 16,
   },
@@ -236,8 +285,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // flexDirection: "row",
-    // alignItems: "center",
     padding: 16,
     backgroundColor: "#111",
     borderRadius: 8,
@@ -286,13 +333,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#CCC",
   },
-  /* Video player container + close button */
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 6,
+  },
+  tagBubble: {
+    alignSelf: "flex-start",
+    backgroundColor: "#FE7201",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginRight: 6,
+    marginBottom: 6,
+  },
+  tagText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#111",
+  },
   videoPlayerContainer: {
     width: "100%",
     aspectRatio: 16 / 9,
     backgroundColor: "#000",
     position: "relative",
-    zIndex: 10, // bring the video container above scroll
+    zIndex: 10,
   },
   closeButton: {
     position: "absolute",
@@ -301,9 +366,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 20,
     padding: 8,
-    zIndex: 11, // ensure the close button is above the video
+    zIndex: 11,
   },
-  /* Modal styling */
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -312,7 +376,6 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: "#222",
-    color: "#FFF",
     borderRadius: 20,
     padding: 35,
     shadowColor: "#000",
